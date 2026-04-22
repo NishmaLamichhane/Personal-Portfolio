@@ -1669,6 +1669,7 @@
         border-radius: 12px 0 0 12px;
         font-size: 0.95rem;
       }
+      
     }
   </style>
 </head>
@@ -1909,6 +1910,13 @@
           <h3>Website Maintenance</h3>
           <p>Ongoing support, bug fixes, performance optimisation and security updates for your site.</p>
         </div>
+        <!-- Database Integration -->
+        <div class="service-card reveal" style="transition-delay:0.4s">
+          <div class="service-icon"><i class="fas fa-database"></i></div>
+          <h3>Database Integration</h3>
+          <p>Seamless integration of databases with web applications, ensuring data integrity, security, and optimal
+            performance.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -2008,7 +2016,9 @@
               src="https://z-cdn-media.chatglm.cn/files/8cb5fc0c-e78f-4b51-b588-0220850d3c3b.png?auth_key=1876529751-c2164852a30c43dfb10b3d81511dbc0a-0-04abc6569461c3ad82ce06a410fd6325"
               alt="CleanNepal — Smart Waste Management System" />
             <div class="portfolio-overlay">
-              <div class="overlay-pill"><i class="fas fa-eye"></i> View Project</div>
+              <a href="https://cleannepal-smart-waste-management-system-production.up.railway.app/">
+                <div class="overlay-pill"><i class="fas fa-eye"></i> View Project</div>
+              </a>
             </div>
           </div>
           <div class="portfolio-info">
@@ -2017,9 +2027,11 @@
               tracking, recycling analytics, community engagement and environmental awareness with 50K+ trees planted
               and 95% recycling rate.</p>
             <div class="tech-tags">
-              <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>PHP</span><span>Laravel</span></div>
+              <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>PHP</span><span>Laravel</span>
+            </div>
             <div class="portfolio-links">
-              <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i> Live Demo</a>
+              <a href="https://cleannepal-smart-waste-management-system-production.up.railway.app/"
+                class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i> Live Demo</a>
               <a href="https://github.com/NishmaLamichhane" target="_blank" class="btn btn-outline btn-sm"><i
                   class="fab fa-github"></i> Code</a>
             </div>
@@ -2165,26 +2177,35 @@
     }, { threshold: 0.4 });
     document.querySelectorAll('.skill-card').forEach(c => skillObs.observe(c));
 
-    const contactForm = document.getElementById('contactForm');
     contactForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const btn = this.querySelector('button[type="submit"]');
       const orig = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
       btn.disabled = true;
+
       fetch(this.action, {
         method: 'POST',
-        body: new FormData(this),
-        headers: { 'Accept': 'application/json' }
+        body: new FormData(this) // Remove the 'Accept' header for now
       })
-        .then(r => {
-          if (r.ok) { showToast('✓ Message sent! I\'ll get back to you soon.'); this.reset(); }
-          else showToast('✗ Something went wrong. Please try again.');
+        .then(response => response.json()) // Force parse the response as JSON
+        .then(data => {
+          if (data.status === 'success') {
+            showToast('✓ Message sent! I\'ll get back to you soon.');
+            this.reset();
+          } else {
+            showToast('✗ Error: ' + data.message);
+          }
         })
-        .catch(() => showToast('✗ Network error. Please try again.'))
-        .finally(() => { btn.innerHTML = orig; btn.disabled = false; });
+        .catch(error => {
+          console.error('Error:', error);
+          showToast('✗ Network error or Server script failed.');
+        })
+        .finally(() => {
+          btn.innerHTML = orig;
+          btn.disabled = false;
+        });
     });
-
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
